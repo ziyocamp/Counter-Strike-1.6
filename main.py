@@ -17,7 +17,7 @@ class Player:
         self.team = team
         self.health = 100
         self.money = 700
-        self.weapons = []
+        self.weapon = Weapon("Knife", 0, 15)
 
         self.join_info()
 
@@ -25,21 +25,24 @@ class Player:
         print(colored(f"{self.name} joined {self.team}", "green"))
 
     def pick_weapon(self, weapen: Weapon) -> None:
-        if weapen in self.weapons:
-            print(colored(f"{self.name} has already {weapen.name}"))
+        if self.money >= weapen.price:
+            self.money -= weapen.price
+            self.weapon = weapen
+            print(colored(f"{self.name} picked up {weapen.name}", "blue"))
         else:
-            if self.money >= weapen.price:
-                self.money -= weapen.price
-                self.weapons.append(weapen)
-                print(colored(f"{self.name} picked up {weapen.name}", "blue"))
-            else:
-                print(colored(f"{self.name} has not enough money", "red"))
+            print(colored(f"{self.name} has not enough money", "red"))
 
     def shoot(self, target) -> None:
-        pass
+        self.weapon.shoot()
+        target.take_damage(self.weapon.damage)
 
     def take_damage(self, amount: int) -> None:
-        pass
+        if self.health <= 0:
+            self.health = 0
+            print(f'{self.name} is already DIED!')
+        self.health -= amount
+        if self.health <= 0:
+            print(colored(f"{self.name} DEAD!", "red"))
 
 
 def main() -> None:
@@ -53,18 +56,16 @@ def main() -> None:
     player03 = Player('Aloxiddin', 'Terrorist')
     player04 = Player('Nodir', 'Terrorist')
 
-    player01.pick_weapon(weapon01)
-    player01.pick_weapon(weapon03)
     player01.pick_weapon(weapon02)
 
     player02.pick_weapon(weapon02)
-    player02.pick_weapon(weapon04)
 
-    player03.pick_weapon(weapon03)
+    player03.pick_weapon(weapon01)
 
-    player04.pick_weapon(weapon02)
-    player04.pick_weapon(weapon01)
+    player01.shoot(player03)
+    player01.shoot(player03)
 
+    player03.shoot(player01)
 
 
 if __name__ == '__main__':
